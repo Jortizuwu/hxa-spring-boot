@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  # mysql container
+  db_mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_BD}
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+    restart: always
+    networks:
+      - hxa_task_network
+
+  # phpmyadmin container
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    depends_on:
+      - db_mysql
+    environment:
+      PMA_HOST: db_mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    networks:
+      - hxa_task_network
+    ports:
+      - 5051:80
+
+volumes:
+  dbdata:
+
+networks:
+  hxa_task_network:
+    driver: bridge
